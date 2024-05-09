@@ -1,29 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "graph.h"
 #include "util.h"
-#include "time.h"
+#include "args.h"
 
 void tsort();
 void hamiltonian();
 void test();
 void generate(int vertices, long double p, int connected);
 
-#define COMMAND 4
-
 int main(int argc, char **argv) {
-    switch (COMMAND) {
-        case 1: 
+    args program_args = {0,0.1,20,GENERATE};
+    parse_args(argc,argv,&program_args);
+    switch (program_args.program) {
+        case TEST: 
             test();
             break;
-        case 2:
+        case HAMILTONIAN:
             hamiltonian();
             break;
-        case 3:
+        case T_SORT:
             tsort();
             break;
-        case 4:
-            generate(100,0,1);
+        case GENERATE:
+            generate(program_args.vertices,program_args.sparsity,program_args.connected);
             break;
     }
 }

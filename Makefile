@@ -1,8 +1,8 @@
 CFLAGS=-Wall
 NUM_TEST=6
 
-dag: src/main.c list.o graph.o util.o
-	gcc $(CFLAGS) -o dag src/main.c util.o graph.o list.o
+dag: src/main.c list.o graph.o util.o args.o
+	gcc $(CFLAGS) -o dag src/main.c args.o util.o graph.o list.o
 
 test: tests/test.c list.o graph.o
 	gcc $(CFLAGS) -o test tests/test.c list.o graph.o
@@ -15,6 +15,9 @@ list.o: src/list.c src/list.h
 
 util.o: src/util.c src/util.h
 	gcc $(CFLAGS) -c src/util.c
+
+args.o: src/args.c src/args.h
+	gcc $(CFLAGS) -c src/args.c
 
 
 .PHONY: validation-test
