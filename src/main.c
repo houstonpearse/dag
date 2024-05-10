@@ -39,6 +39,7 @@ void generate(int vertices, long double p, int connected) {
                 add_adj_list(adj_list,perm[i],perm[j]);
             }
         }
+        // ensure connected
         if (i != vertices-1 && connected && adj_list->edges[perm[i]]->head == NULL) {
             j = (rand() % ((vertices-1)-(i+1)+1)) + (i+1); // rand int between i+1 and n-1
             add_adj_list(adj_list,perm[i],perm[j]);

@@ -14,7 +14,9 @@
 */
 int *hamiltonian_dag_adj_list(adj_list_t *adj_list) {
     int u,v,i,*topological_sort = topological_sort_dag_adj_list(adj_list);
-    
+    if (topological_sort == NULL) {
+        return NULL;
+    }
     // check if all vertex pairs are edges
     for (i=1;i<adj_list->num_vertices;i++) {
         u = topological_sort[i-1];
@@ -34,16 +36,19 @@ int *hamiltonian_dag_adj_list(adj_list_t *adj_list) {
 */
 int *topological_sort_dag_adj_list(adj_list_t *adj_list) {
     int stack_size=0, *stack = (int*)malloc(adj_list->num_vertices*sizeof(int));
-    int i,*mark = (int*)malloc(adj_list->num_vertices*sizeof(int));
+    int loop=0,i,*mark = (int*)malloc(adj_list->num_vertices*sizeof(int));
     for (i=0;i<adj_list->num_vertices;i++) {
         mark[0] = 0;
     }
     for (i=0;i<adj_list->num_vertices;i++) {
         if (mark[i] == 0) {
-            if (dfs_dag_adj_list(adj_list,i,stack,&stack_size,mark) == -1) {
-                return NULL;
-            };
+            dfs_adj_list(adj_list,i,stack,&stack_size,mark,&loop);
         }
+    }
+    if (loop) {
+        free(stack);
+        free(mark);
+        return NULL;
     }
     //reverse list
     for (i=0;i<adj_list->num_vertices;i++){
@@ -55,20 +60,18 @@ int *topological_sort_dag_adj_list(adj_list_t *adj_list) {
 
 int test_dag_adj_list(adj_list_t *adj_list) {
     int stack_size=0, *stack = (int*)malloc(adj_list->num_vertices*sizeof(int));
-    int i,*mark = (int*)malloc(adj_list->num_vertices*sizeof(int));
+    int loop=0,i,*mark = (int*)malloc(adj_list->num_vertices*sizeof(int));
     for (i=0;i<adj_list->num_vertices;i++) {
         mark[0] = 0;
     }
     for (i=0;i<adj_list->num_vertices;i++) {
         if (mark[i] == 0) {
-            if (dfs_dag_adj_list(adj_list,i,stack,&stack_size,mark) == -1) {
-                return 0;
-            };
+            dfs_adj_list(adj_list,i,stack,&stack_size,mark,&loop);
         }
     }
     free(stack);
     free(mark);
-    return 1;
+    return !loop;
 }
 
 /* 
@@ -82,28 +85,27 @@ int test_dag_adj_list(adj_list_t *adj_list) {
     int stack_size: size of array
     int mark: array to mark vertices as visted 
 */
-int dfs_dag_adj_list(adj_list_t *adj_list, int vertex,int *stack,int *stack_size,int *mark) {
+void dfs_adj_list(adj_list_t *adj_list, int vertex,int *stack,int *stack_size,int *mark,int *loop) {
     node_t *tempnode;    
     if (mark[vertex] == -1) {
-        return -1; // loop detected
+        *loop=1;// loop detected
+        return;
     } else if (mark[vertex] == 1) {
-        return 1; // already visited
+        return; // already visited
     };
     mark[vertex] = -1; // mark node as in progress
 
     //look at neighbours 
     tempnode = adj_list->edges[vertex]->head;
     while (tempnode) {
-	    if (dfs_dag_adj_list(adj_list, tempnode->data,stack,stack_size,mark) == -1) {
-            return -1;
-        }
+	    dfs_adj_list(adj_list, tempnode->data,stack,stack_size,mark,loop);
         tempnode=tempnode->next;
 	}
 
     mark[vertex] = 1; // mark node as visited
     stack[*stack_size]=vertex;
     *stack_size+=1;
-    return 1;
+    return;
 }
 
 /*******************************************************/
