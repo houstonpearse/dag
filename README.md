@@ -15,20 +15,92 @@ A program for generating graphs and determining if there exists a Hamiltonian pa
 </div>
 
 ## Features
+### Graph Input format
 
+A directed graph that contains n vertices and m edges will be expressed in this format.
+
+There will be n vertices labelled $0,1,...,n-1$ and only those vertices can be used to make edges.
+
+i.e if $n=3$ then you cannot add the edge `3 2` since $3 \gt n-1$
+```
+n m
+0 1
+4 6
+7 8
+2 3
+1 2
+0 4
+6 8
+...
+```
+### Hamiltonian
 Find the hamiltonian path for a DAG
 `./dag hamiltonian`
 
+Reads a graph from stdin with the above graph format.
+
+This Will output the vertices of the hamiltonian path in order. Or will output nothing if no hamiltonian exists.
+
+e.g
+```
+4
+0
+2
+3
+1
+8
+6
+...
+```
+
+### DAG test
 Test that a Graph contains no cycles.
+
 `./dag test`
 
+Reads a graph from stdin and outputs 1 if the graph is a DAG and 0 if it has a cycle.
+
+```
+1
+```
+
+### DAG Topological sort
+
 Perform a topological sort on the DAG
+
 `./dag t-sort`
 
-Generate a DAG
+Reads a graph from stdin and outputs a ordered list of vertices.
+e.g
+```
+4
+0
+2
+3
+1
+8
+6
+...
+```
+### Generate a DAG
 `./dag generate --vertices 440 --sparsity 0.4 --connected`
 
-Generate a DAG and find a hamiltonian
+This outputs a graph with same formating as above. So the output can be used with the other commands.
+
+e.g.
+```
+n m
+0 1
+4 6
+7 8
+2 3
+1 2
+0 4
+6 8
+...
+```
+Generate a DAG and use the output to check for a hamiltonian.
+
 `./dag generate --vertices 100 --sparsity 1 --connected | ./dag hamiltonian`
 
 ## Usage
@@ -66,7 +138,10 @@ And when $p$ ~ $0$ we have a very sparse DAG and when $p$ ~ $1$ we have a very d
 
 For DAG with N vertices. A DAG is connected, if, for each vertex A, the sum of vertices that can be reached from A, and the sum of vertices that can reach A, total to N.
 
-To generate a DAG that is connected. For each vertex $v_i$ we must ensure $$\sum^{i \lt j}e_{i,j} + \sum^{i \lt j}e_{j,i} \ge 1$$
+Alternatively we can ensure connectedness, if, for each vertex $v_i$ we can ensure  $$\sum^{i \lt j}e_{i,j} \ge 1$$
+
+This will only generate a subset of all possible connected DAGs. A DAG with multiple "sinks" cant be produced. For a truely random DAG dont set the connected flag.
+
 
 ## topological sort
 
